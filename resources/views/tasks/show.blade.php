@@ -8,11 +8,15 @@
             <nav aria-label="breadcrumb" class="mb-3">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('tasks.index') }}">All Tasks</a>
+                        <a href="{{ route('tasks.index') }}">My Tasks</a>
                     </li>
                     <li class="breadcrumb-item active">{{ $task->title }}</li>
                 </ol>
             </nav>
+            <nav class="mb-4">
+                
+            </nav>
+                
 
             <div class="card">
                 <div class="card-header {{ $task->is_completed ? 'bg-success' : 'bg-primary' }} text-white d-flex justify-content-between align-items-center">
@@ -90,15 +94,7 @@
                     </div>
                 </div>
 
-                <div class="card-footer">
-                    <details>
-                        <summary class="text-muted small" style="cursor:pointer;">
-                            <i class="bi bi-code-slash me-1"></i>
-                            Show raw model data (for presentation demo)
-                        </summary>
-                        <pre class="mt-2 bg-dark text-success p-3 rounded small">{{ json_encode($task->toArray(), JSON_PRETTY_PRINT) }}</pre>
-                    </details>
-                </div>
+                
 
             </div>
 

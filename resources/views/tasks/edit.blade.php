@@ -8,7 +8,7 @@
             <nav aria-label="breadcrumb" class="mb-3">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item">
-                        <a href="{{ route('tasks.index') }}">All Tasks</a>
+                        <a href="{{ route('tasks.index') }}">My Tasks</a>
                     </li>
                     <li class="breadcrumb-item">
                         <a href="{{ route('tasks.show', $task) }}">{{ $task->title }}</a>

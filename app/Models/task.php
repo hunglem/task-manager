@@ -10,6 +10,7 @@ class Task extends Model
     use HasFactory;
 
     protected $fillable = [
+        'user_id',
         'title',
         'description',
         'is_completed',
@@ -33,5 +34,10 @@ class Task extends Model
     public function scopeByPriority($query, string $priority)
     {
         return $query->where('priority', $priority);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

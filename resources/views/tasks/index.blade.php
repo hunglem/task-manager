@@ -11,6 +11,22 @@
             </h1>
             {{-- $tasks->total() returns the total count across ALL pages --}}
             <small class="text-muted">{{ $tasks->total() }} task(s) total</small>
+            <form action="{{ route('tasks.index') }}" method="GET" class="d-flex gap-2 mt-2">
+                <input type="search"
+                       name="search"
+                       id="task-search"
+                       class="form-control form-control-sm"
+                       placeholder="Search tasks..."
+                       value="{{ request('search') }}">
+                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-search"></i>
+                </button>
+                @if (request('search'))
+                    <a href="{{ route('tasks.index') }}" class="btn btn-sm btn-outline-secondary">
+                        Clear
+                    </a>
+                @endif
+            </form>
         </div>
         {{-- Link to the "create task" form using its named route --}}
         <a href="{{ route('tasks.create') }}" class="btn btn-primary">
@@ -21,11 +37,18 @@
     @if ($tasks->isEmpty())
         <div class="text-center py-5">
             <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
-            <h4 class="mt-3 text-muted">No tasks yet!</h4>
-            <p class="text-muted">Click "Add New Task" to get started.</p>
-            <a href="{{ route('tasks.create') }}" class="btn btn-primary mt-2">
-                Create Your First Task
-            </a>
+            @if (request('search'))
+                <h4 class="mt-3 text-muted">No tasks found for "{{ request('search') }}".</h4>
+                <a href="{{ route('tasks.index') }}" class="btn btn-outline-secondary mt-2">
+                    Clear Search
+                </a>
+            @else
+                <h4 class="mt-3 text-muted">No tasks yet!</h4>
+                <p class="text-muted">Click "Add New Task" to get started.</p>
+                <a href="{{ route('tasks.create') }}" class="btn btn-primary mt-2">
+                    Create Your First Task
+                </a>
+            @endif
         </div>
 
     @else
@@ -89,6 +112,21 @@
                                     <i class="bi bi-trash"></i> Delete
                                 </button>
                             </form>
+                            @if (! $task->is_completed)
+                                <form action="{{ route('tasks.update', $task) }}"
+                                      method="POST"
+                                      class="flex-fill"
+                                      onsubmit="return confirm('Mark this task as completed?')">
+                                    @csrf
+                                    @method('PATCH')
+                                    <input type="hidden" name="title" value="{{ $task->title }}">
+                                    <input type="hidden" name="priority" value="{{ $task->priority }}">
+                                    <input type="hidden" name="is_completed" value="1">
+                                    <button type="submit" class="btn btn-sm btn-success w-100">
+                                        <i class="bi bi-check2-circle"></i> Complete
+                                    </button>
+                                </form>
+                            @endif
 
                         </div>
                     </div>

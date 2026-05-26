@@ -25,12 +25,30 @@
                 <i class="bi bi-check2-square me-2"></i>Task Manager
             </a>
             <div class="navbar-nav ms-auto">
-                <a class="nav-link text-white" href="{{ route('tasks.index') }}">
-                    <i class="bi bi-list-task me-1"></i>All Tasks
-                </a>
-                <a class="nav-link text-white" href="{{ route('tasks.create') }}">
-                    <i class="bi bi-plus-circle me-1"></i>New Task
-                </a>
+                @auth
+                    <a class="nav-link text-white" href="{{ route('tasks.index') }}">
+                        <i class="bi bi-list-task me-1"></i>My Tasks
+                    </a>
+                    <a class="nav-link text-white" href="{{ route('tasks.create') }}">
+                        <i class="bi bi-plus-circle me-1"></i>New Task
+                    </a>
+                    <a class="nav-link text-white" href="{{ route('users.show', auth()->user()) }}">
+                        <i class="bi bi-person-circle me-1"></i>{{ auth()->user()->name }}
+                    </a>
+                    <form action="{{ route('logout') }}" method="POST" class="ms-2">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-outline-light">
+                            <i class="bi bi-box-arrow-right me-1"></i>Logout
+                        </button>
+                    </form>
+                @else
+                    <a class="nav-link text-white" href="{{ route('login') }}">
+                        <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                    </a>
+                    <a class="nav-link text-white" href="{{ route('users.create') }}">
+                        <i class="bi bi-person-plus me-1"></i>Register
+                    </a>
+                @endauth
             </div>
         </div>
     </nav>
@@ -47,7 +65,6 @@
             <div class="alert alert-danger mb-4">
                 <strong><i class="bi bi-exclamation-triangle me-2"></i>Please fix the following:</strong>
                 <ul class="mt-2 mb-0">
-                    {{-- Loop through each error message and display it --}}
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach
