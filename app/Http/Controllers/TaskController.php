@@ -29,9 +29,6 @@ class TaskController extends Controller
             'tasks' => $tasks,
             'search' => $search,
         ]);
-
-        $tasks = Task::paginate(10)->withQueryString();
-        return view('tasks.index', compact('tasks'));
     }
 
     public function create(): View
