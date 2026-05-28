@@ -13,6 +13,18 @@ class TaskController extends Controller
     {
 
         $search = trim($request->input('search', ''));
+        $sortBy = $request->input('sort_by', 'created_at');
+        $sortDirection = $request->input('sort_direction', 'desc');
+
+        $allowedSorts = ['created_at', 'title', 'priority', 'is_completed'];
+
+        if (! in_array($sortBy, $allowedSorts, true)) {
+            $sortBy = 'created_at';
+        }
+
+        if (! in_array($sortDirection, ['asc', 'desc'], true)) {
+            $sortDirection = 'desc';
+        }
 
         $tasks = Task::query()
             ->when($search !== '', function ($query) use ($search) {
@@ -21,13 +33,21 @@ class TaskController extends Controller
                         ->orWhere('description', 'like', "%{$search}%");
                 });
             })
-            ->latest()
+            ->when($sortBy === 'priority', function ($query) use ($sortDirection) {
+                $query->orderByRaw(
+                    "CASE priority WHEN 'high' THEN 3 WHEN 'medium' THEN 2 WHEN 'low' THEN 1 END {$sortDirection}"
+                );
+            }, function ($query) use ($sortBy, $sortDirection) {
+                $query->orderBy($sortBy, $sortDirection);
+            })
             ->paginate(6)
             ->appends($request->query());
 
         return view('tasks.index', [
             'tasks' => $tasks,
             'search' => $search,
+            'sortBy' => $sortBy,
+            'sortDirection' => $sortDirection,
         ]);
     }
 

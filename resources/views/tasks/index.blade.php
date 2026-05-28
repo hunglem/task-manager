@@ -11,17 +11,27 @@
             </h1>
             {{-- $tasks->total() returns the total count across ALL pages --}}
             <small class="text-muted">{{ $tasks->total() }} task(s) total</small>
-            <form action="{{ route('tasks.index') }}" method="GET" class="d-flex gap-2 mt-2">
+            <form action="{{ route('tasks.index') }}" method="GET" class="d-flex flex-wrap gap-2 mt-2">
                 <input type="search"
                        name="search"
                        id="task-search"
                        class="form-control form-control-sm"
                        placeholder="Search tasks..."
-                       value="{{ request('search') }}">
+                       value="{{ $search }}">
+                <select name="sort_by" class="form-select form-select-sm w-auto" aria-label="Sort tasks by">
+                    <option value="created_at" @selected($sortBy === 'created_at')>Date created</option>
+                    <option value="title" @selected($sortBy === 'title')>Title</option>
+                    <option value="priority" @selected($sortBy === 'priority')>Priority</option>
+                    <option value="is_completed" @selected($sortBy === 'is_completed')>Status</option>
+                </select>
+                <select name="sort_direction" class="form-select form-select-sm w-auto" aria-label="Sort direction">
+                    <option value="desc" @selected($sortDirection === 'desc')>Descending</option>
+                    <option value="asc" @selected($sortDirection === 'asc')>Ascending</option>
+                </select>
                 <button type="submit" class="btn btn-sm btn-outline-secondary">
                     <i class="bi bi-search"></i>
                 </button>
-                @if (request('search'))
+                @if ($search || $sortBy !== 'created_at' || $sortDirection !== 'desc')
                     <a href="{{ route('tasks.index') }}" class="btn btn-sm btn-outline-secondary">
                         Clear
                     </a>
