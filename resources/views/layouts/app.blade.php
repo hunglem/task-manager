@@ -34,6 +34,9 @@
                     </a>
                     <a class="nav-link text-white" href="{{ route('users.show', auth()->user()) }}">
                         <i class="bi bi-person-circle me-1"></i>{{ auth()->user()->name }}
+                        @if (auth()->user()->isSuperUser())
+                            <span class="badge bg-light text-primary ms-1">Super</span>
+                        @endif
                     </a>
                     <form action="{{ route('logout') }}" method="POST" class="ms-2">
                         @csrf

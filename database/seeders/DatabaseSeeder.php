@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -12,7 +13,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        $superUser = User::firstOrCreate(
+            ['email' => env('SUPER_USER_EMAIL', 'super@example.com')],
+            [
+                'name' => env('SUPER_USER_NAME', 'Super User'),
+                'password' => env('SUPER_USER_PASSWORD', 'password'),
+            ],
+        );
+
+        $superUser->forceFill(['is_super_user' => true])->save();
 
         // \App\Models\User::factory()->create([
         //     'name' => 'Test User',

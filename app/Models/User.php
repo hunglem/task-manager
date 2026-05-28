@@ -23,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_super_user',
     ];
 
     /**
@@ -43,10 +44,16 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'is_super_user' => 'boolean',
     ];
 
     public function tasks()
     {
         return $this->hasMany(Task::class);
+    }
+
+    public function isSuperUser(): bool
+    {
+        return (bool) $this->is_super_user;
     }
 }

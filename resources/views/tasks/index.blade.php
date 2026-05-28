@@ -82,6 +82,13 @@
                                 </p>
                             @endif
 
+                            @if (auth()->user()->isSuperUser())
+                                <small class="text-muted d-block">
+                                    <i class="bi bi-person me-1"></i>
+                                    {{ $task->user?->name ?? 'Unassigned' }}
+                                </small>
+                            @endif
+
                             <div class="mt-2">
                                 @if ($task->is_completed)
                                     <span class="badge bg-success">
@@ -131,6 +138,7 @@
                                     @method('PATCH')
                                     <input type="hidden" name="title" value="{{ $task->title }}">
                                     <input type="hidden" name="priority" value="{{ $task->priority }}">
+                                    <input type="hidden" name="user_id" value="{{ $task->user_id }}">
                                     <input type="hidden" name="is_completed" value="1">
                                     <button type="submit" class="btn btn-sm btn-success w-100">
                                         <i class="bi bi-check2-circle"></i> Complete

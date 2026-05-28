@@ -42,6 +42,15 @@
                         </span>
                     </div>
 
+                    @if (auth()->user()->isSuperUser())
+                        <div class="mb-4">
+                            <h6 class="text-uppercase text-muted small fw-bold mb-2">
+                                Assigned To
+                            </h6>
+                            <p class="text-dark mb-0">{{ $task->user?->name ?? 'Unassigned' }}</p>
+                        </div>
+                    @endif
+
                     <div class="mb-4">
                         <h6 class="text-uppercase text-muted small fw-bold mb-2">
                             Description

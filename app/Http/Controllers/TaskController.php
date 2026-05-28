@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 use App\Models\Task;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class TaskController extends Controller
@@ -26,11 +28,20 @@ class TaskController extends Controller
             $sortDirection = 'desc';
         }
 
+        $user = $request->user();
+
         $tasks = Task::query()
+            ->with('user')
+            ->when(! $user->is_super_user, function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
                     $query->where('title', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%");
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhereHas('user', function ($query) use ($search) {
+                            $query->where('name', 'like', "%{$search}%");
+                        });
                 });
             })
             ->when($sortBy === 'priority', function ($query) use ($sortDirection) {
@@ -53,7 +64,9 @@ class TaskController extends Controller
 
     public function create(): View
     {
-        return view('tasks.create');
+        return view('tasks.create', [
+            'users' => $this->assignableUsers(),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -62,7 +75,16 @@ class TaskController extends Controller
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
             'priority'    => 'required|in:low,medium,high',
+            'user_id'     => [
+                Rule::requiredIf($request->user()->is_super_user),
+                'nullable',
+                'exists:users,id',
+            ],
         ]);
+
+        $validated['user_id'] = $request->user()->is_super_user
+            ? $validated['user_id']
+            : $request->user()->id;
 
         Task::create($validated);
 
@@ -72,26 +94,37 @@ class TaskController extends Controller
 
     public function show(Task $task): View
     {
+        $this->authorizeTaskAccess($task);
 
         return view('tasks.show', compact('task'));
     }
 
     public function edit(Task $task): View
     {
+        $this->authorizeTaskAccess($task);
 
-        return view('tasks.edit', compact('task'));
+        return view('tasks.edit', [
+            'task' => $task,
+            'users' => $this->assignableUsers(),
+        ]);
     }
 
     public function update(Request $request, Task $task): RedirectResponse
     {
+        $this->authorizeTaskAccess($task);
+
         $validated = $request->validate([
             'title'        => 'required|string|max:255',
             'description'  => 'nullable|string',
             'priority'     => 'required|in:low,medium,high',
             'is_completed' => 'sometimes|boolean',
+            'user_id'      => 'nullable|exists:users,id',
         ]);
 
         $validated['is_completed'] = $request->has('is_completed');
+        $validated['user_id'] = $request->user()->is_super_user
+            ? ($validated['user_id'] ?? $task->user_id)
+            : $request->user()->id;
 
         $task->update($validated);
 
@@ -101,9 +134,25 @@ class TaskController extends Controller
 
     public function destroy(Task $task): RedirectResponse
     {
+        $this->authorizeTaskAccess($task);
+
         $task->delete();
 
         return redirect()->route('tasks.index')
             ->with('success', 'Task deleted successfully!');
+    }
+
+    private function authorizeTaskAccess(Task $task): void
+    {
+        abort_unless(auth()->user()->is_super_user || auth()->id() === $task->user_id, 404);
+    }
+
+    private function assignableUsers()
+    {
+        if (! auth()->user()->is_super_user) {
+            return collect();
+        }
+
+        return User::orderBy('name')->get();
     }
 }

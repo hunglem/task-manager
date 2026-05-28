@@ -97,6 +97,29 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+                        @if (auth()->user()->isSuperUser())
+                            <div class="mb-4">
+                                <label for="user_id" class="form-label fw-semibold">
+                                    Assign To <span class="text-danger">*</span>
+                                </label>
+                                <select
+                                    class="form-select {{ $errors->has('user_id') ? 'is-invalid' : '' }}"
+                                    id="user_id"
+                                    name="user_id"
+                                    required
+                                >
+                                    <option value="">Select user</option>
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}" @selected((int) old('user_id', auth()->id()) === $user->id)>
+                                            {{ $user->name }} ({{ $user->email }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('user_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        @endif
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary flex-fill">
                                 <i class="bi bi-plus-circle me-1"></i>Create Task

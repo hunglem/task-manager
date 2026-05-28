@@ -79,6 +79,27 @@
                             @enderror
                         </div>
 
+                        @if (auth()->user()->isSuperUser())
+                            <div class="mb-3">
+                                <label for="user_id" class="form-label fw-semibold">Assign To</label>
+                                <select
+                                    class="form-select {{ $errors->has('user_id') ? 'is-invalid' : '' }}"
+                                    id="user_id"
+                                    name="user_id"
+                                    required
+                                >
+                                    @foreach ($users as $user)
+                                        <option value="{{ $user->id }}" @selected((int) old('user_id', $task->user_id) === $user->id)>
+                                            {{ $user->name }} ({{ $user->email }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('user_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        @endif
+
                         <div class="mb-4">
                             <div class="form-check">
                                 <input
