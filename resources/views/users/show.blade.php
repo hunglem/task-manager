@@ -8,9 +8,15 @@
         <div class="col-md-8 col-lg-7">
             <nav aria-label="breadcrumb" class="mb-3">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('users.index') }}">All Users</a>
-                    </li>
+                    @if (auth()->user()->isSuperUser())
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('users.index') }}">All Users</a>
+                        </li>
+                    @else
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('tasks.index') }}">My Tasks</a>
+                        </li>
+                    @endif
                     <li class="breadcrumb-item active">{{ $user->name }}</li>
                 </ol>
             </nav>
@@ -33,6 +39,15 @@
                         </p>
                     </div>
 
+                    <div class="mb-4">
+                        <h6 class="text-uppercase text-muted small fw-bold mb-2">Role</h6>
+                        @if ($user->isSuperUser())
+                            <span class="badge bg-primary">Super user</span>
+                        @else
+                            <span class="badge bg-secondary">User</span>
+                        @endif
+                    </div>
+
                     <div class="d-flex gap-2">
                         <a href="{{ route('users.edit', $user) }}" class="btn btn-warning flex-fill">
                             <i class="bi bi-pencil me-1"></i>Edit User
@@ -50,7 +65,7 @@
                             </button>
                         </form>
 
-                        <a href="{{ route('users.index') }}" class="btn btn-outline-secondary">
+                        <a href="{{ auth()->user()->isSuperUser() ? route('users.index') : route('tasks.index') }}" class="btn btn-outline-secondary">
                             <i class="bi bi-arrow-left me-1"></i>Back
                         </a>
                     </div>

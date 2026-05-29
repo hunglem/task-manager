@@ -58,6 +58,7 @@
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
+                            <th>Role</th>
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -66,6 +67,13 @@
                             <tr>
                                 <td class="fw-semibold">{{ $user->name }}</td>
                                 <td>{{ $user->email }}</td>
+                                <td>
+                                    @if ($user->isSuperUser())
+                                        <span class="badge bg-primary">Super</span>
+                                    @else
+                                        <span class="badge bg-secondary">User</span>
+                                    @endif
+                                </td>
                                 <td>
                                     <div class="d-flex justify-content-end gap-2">
                                         <a href="{{ route('users.show', $user) }}" class="btn btn-sm btn-outline-primary">

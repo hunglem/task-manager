@@ -8,9 +8,15 @@
         <div class="col-md-8 col-lg-6">
             <nav aria-label="breadcrumb" class="mb-3">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('users.index') }}">All Users</a>
-                    </li>
+                    @if (auth()->user()->isSuperUser())
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('users.index') }}">All Users</a>
+                        </li>
+                    @else
+                        <li class="breadcrumb-item">
+                            <a href="{{ route('tasks.index') }}">My Tasks</a>
+                        </li>
+                    @endif
                     <li class="breadcrumb-item">
                         <a href="{{ route('users.show', $user) }}">{{ $user->name }}</a>
                     </li>
@@ -89,6 +95,22 @@
                                 name="password_confirmation"
                             >
                         </div>
+
+                        @if (auth()->user()->isSuperUser())
+                            <div class="form-check mb-4">
+                                <input
+                                    type="checkbox"
+                                    class="form-check-input"
+                                    id="is_super_user"
+                                    name="is_super_user"
+                                    value="1"
+                                    @checked(old('is_super_user', $user->is_super_user))
+                                >
+                                <label class="form-check-label fw-semibold" for="is_super_user">
+                                    Super user
+                                </label>
+                            </div>
+                        @endif
 
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-warning flex-fill">

@@ -23,9 +23,10 @@ Route::get('/', function () {
 });
 
 Route::resource('tasks', TaskController::class)->middleware('auth');
-Route::resource('users', UserController::class)
-    ->only(['create', 'store'])
-    ->middleware('guest');
+
+Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+Route::post('/users', [UserController::class, 'store'])->name('users.store');
+
 Route::resource('users', UserController::class)
     ->except(['create', 'store'])
     ->middleware('auth');

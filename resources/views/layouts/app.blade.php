@@ -27,11 +27,13 @@
             <div class="navbar-nav ms-auto">
                 @auth
                     <a class="nav-link text-white" href="{{ route('tasks.index') }}">
-                        <i class="bi bi-list-task me-1"></i>My Tasks
+                        <i class="bi bi-list-task me-1"></i>Tasks
                     </a>
-                    <a class="nav-link text-white" href="{{ route('tasks.create') }}">
-                        <i class="bi bi-plus-circle me-1"></i>New Task
-                    </a>
+                    @if (auth()->user()->isSuperUser())
+                        <a class="nav-link text-white" href="{{ route('users.index') }}">
+                            <i class="bi bi-people me-1"></i>Users
+                        </a>
+                    @endif
                     <a class="nav-link text-white" href="{{ route('users.show', auth()->user()) }}">
                         <i class="bi bi-person-circle me-1"></i>{{ auth()->user()->name }}
                         @if (auth()->user()->isSuperUser())

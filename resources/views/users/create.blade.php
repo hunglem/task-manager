@@ -8,10 +8,20 @@
         <div class="col-md-8 col-lg-6">
             <nav aria-label="breadcrumb" class="mb-3">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a href="{{ route('users.index') }}">All Users</a>
+                    @auth
+                        @if (auth()->user()->isSuperUser())
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('users.index') }}">All Users</a>
+                            </li>
+                        @endif
+                    @endauth
+                    <li class="breadcrumb-item active">
+                        @auth
+                            Create New User
+                        @else
+                            Register
+                        @endauth
                     </li>
-                    <li class="breadcrumb-item active">Create New User</li>
                 </ol>
             </nav>
 
@@ -88,13 +98,35 @@
                             >
                         </div>
 
+                        @auth
+                            @if (auth()->user()->isSuperUser())
+                                <div class="form-check mb-4">
+                                    <input
+                                        type="checkbox"
+                                        class="form-check-input"
+                                        id="is_super_user"
+                                        name="is_super_user"
+                                        value="1"
+                                        @checked(old('is_super_user'))
+                                    >
+                                    <label class="form-check-label fw-semibold" for="is_super_user">
+                                        Set as Admin
+                                    </label>
+                                </div>
+                            @endif
+                        @endauth
+
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary flex-fill">
                                 <i class="bi bi-person-plus me-1"></i>Create User
                             </button>
-                            <a href="{{ route('users.index') }}" class="btn btn-outline-secondary">
-                                Cancel
-                            </a>
+                            @auth
+                                @if (auth()->user()->isSuperUser())
+                                    <a href="{{ route('users.index') }}" class="btn btn-outline-secondary">
+                                        Cancel
+                                    </a>
+                                @endif
+                            @endauth
                         </div>
                     </form>
                 </div>
